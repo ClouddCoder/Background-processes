@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
         if (strcmp(command, "tareas") == 0) {
             for (int i = 0; i < length; i++)
                 printf("%d\n", child_pids[i]);
+            break;
         }
 
         comando = de_cadena_a_vector(command);
