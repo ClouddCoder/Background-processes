@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -23,8 +24,8 @@
 int main(int argc, char *argv[]) {
     char command[256];
     char **comando;
-    int posicion = 0, status, child_pids[3], child_nb = 0, eliminar;
-    bool bg, tareas;
+    int posicion = 0, status, child_pids[3], child_nb = 0, eliminar, detener_hijo;
+    bool bg;
 
     while (1) {
         printf("> ");
@@ -36,7 +37,6 @@ int main(int argc, char *argv[]) {
             if (strcmp(command, "tareas") == 0) {
                 for (int i = 0; i < child_nb; i++)
                     printf("%d\n", child_pids[i]);
-                    tareas = false;
             }
         }
 
@@ -54,33 +54,33 @@ int main(int argc, char *argv[]) {
 
             // Detiene de manera definitiva un proceso por medio de su identificador
             if (strcmp(comando[0], "detener") == 0) {
+                char pid[256];
                 int borrarElemento;
                 for (int i = 0; i < child_nb; i++) {
-                    char pid[256];
+                    // Convierte en string el pid del proceso para hacer la comparacion con el argumento ingresado por el usuario
                     sprintf(pid, "%d", child_pids[i]);
                     // Revisa si el proceso ingresado existe para detenerlo
                     if (strcmp(comando[1], pid) == 0) {
                         kill(child_pids[i], SIGKILL);
                         borrarElemento = i;
                         eliminar = 1;
-                        printf("El proceso ha sido finalizado\n");
-                        // printf("%d\n", b);
-                    } else {
-                        printf("El proceso no existe\n");
+                        printf("El proceso %d ha sido finalizado\n", child_pids[i]);
+                        break;
+                    } else
                         eliminar = 0;
-                    }
-                    break;
                 }
 
                 // Borra el pid del array de procesos en background
                 if (eliminar == 1) {
                     for (int pos = borrarElemento; pos < child_nb; pos++) {
+                        // Muestra un 0 en la posicion que no tiene elemento
                         if (pos == child_nb - 1)
                             child_pids[pos] = 0;
                         else
                             child_pids[pos] = child_pids[pos + 1];
                     }
-                }
+                } else
+                    printf("El proceso %s no existe\n", comando[1]);
             }
         }
 
@@ -92,15 +92,13 @@ int main(int argc, char *argv[]) {
                 comando[posicion - 1] = NULL;
             }
 
-            if (strcmp(comando[0], "tareas") == 0){
-                comando[0] = NULL;
-            }
-
             execvp(comando[0], comando);
+            // Captura el error en caso de que no se ejecute el execvp y se lo comunica al padre
+            _exit(EXIT_FAILURE);
         } else {
-            if (!bg || !tareas) {
+            if (!bg) {
                 // Si no es un proceso en background, el padre debe esperar la finalizacion del hijo
-                waitpid(rc, NULL, 0);
+                waitpid(rc, &status, 0);
             } else {
                 // Si es un proceso en background, el padre no espera la finalizacion del hijo
                 waitpid(rc, &status, WNOHANG);
@@ -111,7 +109,6 @@ int main(int argc, char *argv[]) {
         }
         posicion = 0;
         bg = false;
-        tareas = true;
     }
     return 0;
 }
