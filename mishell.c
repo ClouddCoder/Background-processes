@@ -32,13 +32,7 @@ int main(int argc, char *argv[]) {
         if (strcmp(command, "salir") == 0)
             break;
 
-        int length = sizeof(child_pids) / sizeof(child_pids[0]);
-
-        if (strcmp(command, "tareas") == 0) {
-            for (int i = 0; i < length; i++)
-                printf("%d\n", child_pids[i]);
-            break;
-        }
+        //int length = sizeof(child_pids) / sizeof(child_pids[0]);
 
         comando = de_cadena_a_vector(command);
 
@@ -49,25 +43,25 @@ int main(int argc, char *argv[]) {
 
         if (posicion > 0) {
             // Si se ingresa un ampersand, bg (background) se convierte en true
-            if (strcmp(comando[posicion - 1], "&") == 0)
+            if (posicion > 1) {
+                if (strcmp(comando[posicion - 1], "&") == 0)
                 bg = true;
+            }
 
             // Tamaño del array de procesos en background
             //int length = sizeof(child_pids) / sizeof(child_pids[0]);
 
             // Si el usuario escribe "tareas" muestra los procesos que se encuentran en background
 
-            /*
             if (strcmp(comando[0], "tareas") == 0) {
-                for (int i = 0; i < length; i++)
+                for (int i = 0; i < child_nb; i++)
                     printf("%d\n", child_pids[i]);
             }
-            */
 
             // Detiene de manera definitiva un proceso por medio de su identificador
             if (strcmp(comando[0], "detener") == 0) {
                 int borrarElemento;
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < child_nb; i++) {
                     char pid[256];
                     sprintf(pid, "%d", child_pids[i]);
                     // Revisa si el proceso ingresado existe para detenerlo
@@ -86,8 +80,8 @@ int main(int argc, char *argv[]) {
 
                 // Borra el pid del array de procesos en background
                 if (eliminar == 1) {
-                    for (int pos = borrarElemento; pos < length; pos++) {
-                        if (pos == length - 1)
+                    for (int pos = borrarElemento; pos < child_nb; pos++) {
+                        if (pos == child_nb - 1)
                             child_pids[pos] = 0;
                         else
                             child_pids[pos] = child_pids[pos + 1];
@@ -100,7 +94,7 @@ int main(int argc, char *argv[]) {
         assert(rc >= 0);
         if (rc == 0) {
             // Si el argumento es un ampersand, se reemplaza por un NULL
-            if (strcmp(comando[posicion - 1], "&") == 0 && posicion > 0) {
+            if (strcmp(comando[posicion - 1], "&") == 0 && posicion > 1) {
                 comando[posicion - 1] = NULL;
             }
             execvp(comando[0], comando);
