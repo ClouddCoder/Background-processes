@@ -32,13 +32,12 @@ int main(int argc, char *argv[]) {
         if (strcmp(command, "salir") == 0) {
             break;
         } else {
+            // Si el usuario escribe "tareas" muestra los procesos que se encuentran en background
             if (strcmp(command, "tareas") == 0) {
                 for (int i = 0; i < child_nb; i++)
-                printf("%d\n", child_pids[i]);
+                    printf("%d\n", child_pids[i]);
             }
         }
-
-        //int length = sizeof(child_pids) / sizeof(child_pids[0]);
 
         comando = de_cadena_a_vector(command);
 
@@ -47,21 +46,10 @@ int main(int argc, char *argv[]) {
             posicion++;
         }
 
-        /*
-        // Si el usuario escribe "tareas" muestra los procesos que se encuentran en background
-        if (strcmp(comando[0], "tareas") == 0) {
-            for (int i = 0; i < child_nb; i++)
-                printf("%d\n", child_pids[i]);
-        }
-        */
-
         if (posicion > 1) {
             // Si se ingresa un ampersand, bg (background) se convierte en true
             if (strcmp(comando[posicion - 1], "&") == 0)
                 bg = true;
-
-            // Tamaño del array de procesos en background
-            //int length = sizeof(child_pids) / sizeof(child_pids[0]);
 
             // Detiene de manera definitiva un proceso por medio de su identificador
             if (strcmp(comando[0], "detener") == 0) {
@@ -102,16 +90,19 @@ int main(int argc, char *argv[]) {
             if (strcmp(comando[posicion - 1], "&") == 0 && posicion > 1) {
                 comando[posicion - 1] = NULL;
             }
+
+            if (strcmp(comando[0], "tareas") == 0){
+                comando[0] = NULL;
+            }
+
             execvp(comando[0], comando);
         } else {
             if (!bg) {
                 // Si no es un proceso en background, el padre debe esperar la finalizacion del hijo
                 waitpid(rc, NULL, 0);
-                // printf("primero %d\n", rc);
             } else {
                 // Si es un proceso en background, el padre no espera la finalizacion del hijo
                 waitpid(rc, &status, WNOHANG);
-                // printf("segundo %d\n", rc);
                 // Se agregan los procesos en background al array child_pids[]
                 child_pids[child_nb] = rc;
                 child_nb++;
