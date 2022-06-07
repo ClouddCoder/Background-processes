@@ -41,12 +41,10 @@ int main(int argc, char *argv[]) {
             posicion++;
         }
 
-        if (posicion > 0) {
+        if (posicion > 1) {
             // Si se ingresa un ampersand, bg (background) se convierte en true
-            if (posicion > 1) {
-                if (strcmp(comando[posicion - 1], "&") == 0)
+            if (strcmp(comando[posicion - 1], "&") == 0)
                 bg = true;
-            }
 
             // Tamaño del array de procesos en background
             //int length = sizeof(child_pids) / sizeof(child_pids[0]);
