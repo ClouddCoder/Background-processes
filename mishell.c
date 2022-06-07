@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
                 for (int i = 0; i < child_nb; i++)
                     printf("%d\n", child_pids[i]);
             }
+            continue;
         }
 
         comando = de_cadena_a_vector(command);
