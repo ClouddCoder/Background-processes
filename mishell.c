@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     char command[256];
     char **comando;
     int posicion = 0, status, child_pids[3], child_nb = 0, eliminar;
-    bool bg;
+    bool bg, tareas;
 
     while (1) {
         printf("> ");
@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
             if (strcmp(command, "tareas") == 0) {
                 for (int i = 0; i < child_nb; i++)
                     printf("%d\n", child_pids[i]);
+                    tareas = false;
             }
         }
 
@@ -97,7 +98,7 @@ int main(int argc, char *argv[]) {
 
             execvp(comando[0], comando);
         } else {
-            if (!bg) {
+            if (!bg || !tareas) {
                 // Si no es un proceso en background, el padre debe esperar la finalizacion del hijo
                 waitpid(rc, NULL, 0);
             } else {
@@ -110,6 +111,7 @@ int main(int argc, char *argv[]) {
         }
         posicion = 0;
         bg = false;
+        tareas = true;
     }
     return 0;
 }
