@@ -29,8 +29,14 @@ int main(int argc, char *argv[]) {
     while (1) {
         printf("> ");
         leer_de_teclado(256, command);
-        if (strcmp(command, "salir") == 0)
+        if (strcmp(command, "salir") == 0) {
             break;
+        } else {
+            if (strcmp(command, "tareas") == 0) {
+                for (int i = 0; i < child_nb; i++)
+                printf("%d\n", child_pids[i]);
+            }
+        }
 
         //int length = sizeof(child_pids) / sizeof(child_pids[0]);
 
@@ -41,11 +47,13 @@ int main(int argc, char *argv[]) {
             posicion++;
         }
 
+        /*
         // Si el usuario escribe "tareas" muestra los procesos que se encuentran en background
         if (strcmp(comando[0], "tareas") == 0) {
             for (int i = 0; i < child_nb; i++)
                 printf("%d\n", child_pids[i]);
         }
+        */
 
         if (posicion > 1) {
             // Si se ingresa un ampersand, bg (background) se convierte en true
