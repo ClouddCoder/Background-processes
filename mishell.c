@@ -31,6 +31,14 @@ int main(int argc, char *argv[]) {
         leer_de_teclado(256, command);
         if (strcmp(command, "salir") == 0)
             break;
+
+        int length = sizeof(child_pids) / sizeof(child_pids[0]);
+
+        if (strcmp(command, "tareas") == 0) {
+            for (int i = 0; i < length; i++)
+                printf("%d\n", child_pids[i]);
+        }
+
         comando = de_cadena_a_vector(command);
 
         // Determina el tamaño de char **comando
@@ -44,13 +52,16 @@ int main(int argc, char *argv[]) {
                 bg = true;
 
             // Tamaño del array de procesos en background
-            int length = sizeof(child_pids) / sizeof(child_pids[0]);
+            //int length = sizeof(child_pids) / sizeof(child_pids[0]);
 
             // Si el usuario escribe "tareas" muestra los procesos que se encuentran en background
+
+            /*
             if (strcmp(comando[0], "tareas") == 0) {
                 for (int i = 0; i < length; i++)
                     printf("%d\n", child_pids[i]);
             }
+            */
 
             // Detiene de manera definitiva un proceso por medio de su identificador
             if (strcmp(comando[0], "detener") == 0) {
