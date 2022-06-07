@@ -38,46 +38,48 @@ int main(int argc, char *argv[]) {
             posicion++;
         }
 
-        // Si se ingresa un ampersand, bg (background) se convierte en true
-        if (strcmp(comando[posicion - 1], "&") == 0) {
-            bg = true;
-        }
+        if (posicion > 0) {
+            // Si se ingresa un ampersand, bg (background) se convierte en true
+            if (strcmp(comando[posicion - 1], "&") == 0)
+                bg = true;
 
-        // Tamaño del array de procesos en background
-        int length = sizeof(child_pids) / sizeof(child_pids[0]);
+            // Tamaño del array de procesos en background
+            int length = sizeof(child_pids) / sizeof(child_pids[0]);
 
-        // Si el usuario escribe "tareas" muestra los procesos que se encuentran en background
-        if (strcmp(comando[0], "tareas") == 0)
-            for (int i = 0; i < length; i++)
-                printf("%d\n", child_pids[i]);
-
-        // Detiene de manera definitiva un proceso por medio de su identificador
-        if (strcmp(comando[0], "detener") == 0) {
-            int borrarElemento;
-            for (int i = 0; i < length; i++) {
-                char pid[256];
-                sprintf(pid, "%d", child_pids[i]);
-                // Revisa si el proceso ingresado existe para detenerlo
-                if (strcmp(comando[1], pid) == 0) {
-                    kill(child_pids[i], SIGKILL);
-                    borrarElemento = i;
-                    eliminar = 1;
-                    printf("El proceso ha sido finalizado\n");
-                    // printf("%d\n", b);
-                } else {
-                    printf("El proceso no existe\n");
-                    eliminar = 0;
-                }
-                break;
+            // Si el usuario escribe "tareas" muestra los procesos que se encuentran en background
+            if (strcmp(comando[0], "tareas") == 0) {
+                for (int i = 0; i < length; i++)
+                    printf("%d\n", child_pids[i]);
             }
 
-            // Borra el pid del array de procesos en background
-            if (eliminar == 1) {
-                for (int pos = borrarElemento; pos < length; pos++) {
-                    if (pos == length - 1)
-                        child_pids[pos] = 0;
-                    else
-                        child_pids[pos] = child_pids[pos + 1];
+            // Detiene de manera definitiva un proceso por medio de su identificador
+            if (strcmp(comando[0], "detener") == 0) {
+                int borrarElemento;
+                for (int i = 0; i < length; i++) {
+                    char pid[256];
+                    sprintf(pid, "%d", child_pids[i]);
+                    // Revisa si el proceso ingresado existe para detenerlo
+                    if (strcmp(comando[1], pid) == 0) {
+                        kill(child_pids[i], SIGKILL);
+                        borrarElemento = i;
+                        eliminar = 1;
+                        printf("El proceso ha sido finalizado\n");
+                        // printf("%d\n", b);
+                    } else {
+                        printf("El proceso no existe\n");
+                        eliminar = 0;
+                    }
+                    break;
+                }
+
+                // Borra el pid del array de procesos en background
+                if (eliminar == 1) {
+                    for (int pos = borrarElemento; pos < length; pos++) {
+                        if (pos == length - 1)
+                            child_pids[pos] = 0;
+                        else
+                            child_pids[pos] = child_pids[pos + 1];
+                    }
                 }
             }
         }
@@ -86,7 +88,7 @@ int main(int argc, char *argv[]) {
         assert(rc >= 0);
         if (rc == 0) {
             // Si el argumento es un ampersand, se reemplaza por un NULL
-            if (strcmp(comando[posicion - 1], "&") == 0) {
+            if (strcmp(comando[posicion - 1], "&") == 0 && posicion > 0) {
                 comando[posicion - 1] = NULL;
             }
             execvp(comando[0], comando);
