@@ -24,7 +24,7 @@
 int main(int argc, char *argv[]) {
     char command[256];
     char **comando;
-    int posicion = 0, status, child_pids[3], child_nb = 0, eliminar, detener_hijo;
+    int posicion = 0, status, child_pids[3], child_nb = 0, eliminar;
     bool bg;
 
     while (1) {
